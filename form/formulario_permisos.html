@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Permisos - Sistema de Asistencia</title>
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <nav class="sidebar neumorphic-sidebar">
+            <div class="sidebar-header">
+                <span class="system-logo-text">INNOVADEV</span>
+            </div>
+            <ul class="nav-links">
+                <li class="nav-item">
+                    <a href="../main_layout.html">
+                        <i class="fas fa-arrow-left"></i>
+                        <span>Volver al Panel</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="main-content-wrapper">
+            <header class="header neumorphic-header">
+                <div class="header-left">
+                    <h2><i class="fas fa-file-alt"></i> Formulario de Permisos</h2>
+                </div>
+            </header>
+
+            <main class="content">
+                <a href="../main_layout.html" class="btn-back">
+                    <i class="fas fa-arrow-left"></i> Volver
+                </a>
+
+                <div id="alert-container"></div>
+
+                <div class="neumorphic-card elevated">
+                    <h3 class="chart-title"><i class="fas fa-edit"></i> Registro de Permiso</h3>
+                    <form id="permisoForm" class="form-grid">
+                        <div class="input-group">
+                            <label for="id_empleado_permiso">Empleado *</label>
+                            <select id="id_empleado_permiso" name="id_empleado_permiso" class="neumorphic-input" required>
+                                <option value="">Seleccione un empleado</option>
+                                <option value="1">Ana López - Mantenimiento</option>
+                                <option value="2">Luis Pérez - Ventas</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="tipo_permiso">Tipo de Permiso *</label>
+                            <select id="tipo_permiso" name="tipo_permiso" class="neumorphic-input" required>
+                                <option value="">Seleccione el tipo</option>
+                                <option value="Médico">Médico</option>
+                                <option value="Personal">Personal</option>
+                                <option value="Fuerza Mayor">Fuerza Mayor</option>
+                                <option value="Vacaciones">Vacaciones</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="fecha_inicio">Fecha de Inicio *</label>
+                            <input type="date" id="fecha_inicio" name="fecha_inicio" class="neumorphic-input" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="fecha_fin">Fecha de Fin *</label>
+                            <input type="date" id="fecha_fin" name="fecha_fin" class="neumorphic-input" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="estado_permiso">Estado *</label>
+                            <select id="estado_permiso" name="estado_permiso" class="neumorphic-input" required>
+                                <option value="pendiente">Pendiente</option>
+                                <option value="aprobado">Aprobado</option>
+                                <option value="rechazado">Rechazado</option>
+                            </select>
+                        </div>
+                        <div class="input-group" style="grid-column: 1 / 3;">
+                            <label for="justificacion">Justificación *</label>
+                            <textarea id="justificacion" name="justificacion" class="neumorphic-input" rows="4" placeholder="Describa el motivo del permiso..." required></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="neumorphic-button btn-cancel" onclick="limpiarFormulario()">Limpiar</button>
+                            <button type="submit" class="neumorphic-button primary-button">Guardar Permiso</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="neumorphic-card elevated" style="margin-top: 20px;">
+                    <h3 class="chart-title"><i class="fas fa-search"></i> Búsqueda de Permisos</h3>
+                    <div class="controls-bar">
+                        <input type="text" id="buscarPermiso" placeholder="Buscar por empleado, tipo o estado..." class="neumorphic-input" style="width: 100%; max-width: 400px;">
+                    </div>
+                    <div class="table-responsive" style="margin-top: 15px;">
+                        <table class="data-table" id="tablaPermisos">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Empleado</th>
+                                    <th>Tipo</th>
+                                    <th>Fecha Inicio</th>
+                                    <th>Fecha Fin</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>Ana López</td>
+                                    <td>Médico</td>
+                                    <td>2025-01-10</td>
+                                    <td>2025-01-12</td>
+                                    <td><span class="status-badge status-active">Aprobado</span></td>
+                                    <td class="action-buttons">
+                                        <button class="btn-edit" onclick="editarPermiso(1)" title="Editar"><i class="fas fa-pen"></i></button>
+                                        <button class="btn-delete" onclick="eliminarPermiso(1)" title="Eliminar"><i class="fas fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                                <tr class="odd-row">
+                                    <td>2</td>
+                                    <td>Luis Pérez</td>
+                                    <td>Personal</td>
+                                    <td>2025-01-20</td>
+                                    <td>2025-01-20</td>
+                                    <td><span class="status-badge" style="color:#ffc107; background-color: rgba(255, 193, 7, 0.2);">Pendiente</span></td>
+                                    <td class="action-buttons">
+                                        <button class="btn-edit" onclick="editarPermiso(2)" title="Editar"><i class="fas fa-pen"></i></button>
+                                        <button class="btn-delete" onclick="eliminarPermiso(2)" title="Eliminar"><i class="fas fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/main.js"></script>
+    <script>
+        function mostrarAlerta(mensaje, tipo = 'success') {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${tipo}`;
+            alertDiv.textContent = mensaje;
+            alertDiv.style.display = 'block';
+            
+            const container = document.getElementById('alert-container');
+            container.innerHTML = '';
+            container.appendChild(alertDiv);
+            
+            setTimeout(() => {
+                alertDiv.style.opacity = '0';
+                setTimeout(() => alertDiv.remove(), 300);
+            }, 3000);
+        }
+
+        document.getElementById('permisoForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            mostrarAlerta('Permiso registrado correctamente', 'success');
+            limpiarFormulario();
+        });
+
+        function limpiarFormulario() {
+            document.getElementById('permisoForm').reset();
+        }
+
+        function editarPermiso(id) {
+            mostrarAlerta(`Editando permiso con ID: ${id}`, 'info');
+        }
+
+        function eliminarPermiso(id) {
+            if (confirm('¿Está seguro que desea eliminar este permiso?')) {
+                mostrarAlerta(`Permiso con ID ${id} eliminado correctamente`, 'success');
+            }
+        }
+
+        document.getElementById('buscarPermiso').addEventListener('input', (e) => {
+            const termino = e.target.value.toLowerCase();
+            const filas = document.querySelectorAll('#tablaPermisos tbody tr');
+            filas.forEach(fila => {
+                const texto = fila.textContent.toLowerCase();
+                fila.style.display = texto.includes(termino) ? '' : 'none';
+            });
+        });
+    </script>
+</body>
+</html>
+
+
+
+
