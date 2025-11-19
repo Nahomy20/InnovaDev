@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Permisos - Sistema de Asistencia</title>
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <nav class="sidebar neumorphic-sidebar">
+            <div class="sidebar-header">
+                <span class="system-logo-text">INNOVADEV</span>
+            </div>
+            <ul class="nav-links">
+                <li class="nav-item">
+                    <a href="../main_layout.html">
+                        <i class="fas fa-arrow-left"></i> Volver al Panel
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="main-content-wrapper">
+            <header class="header neumorphic-header">
+                <div class="header-left">
+                    <h2><i class="fas fa-file-invoice"></i> Reporte de Permisos</h2>
+                </div>
+                <div class="header-right">
+                    <button class="neumorphic-button primary-button" onclick="exportarReporte()" style="width: auto; padding: 8px 20px;">
+                        <i class="fas fa-file-export"></i> Exportar
+                    </button>
+                </div>
+            </header>
+
+            <main class="content">
+
+                <div class="neumorphic-card elevated">
+                    <h3 class="chart-title"><i class="fas fa-filter"></i> Filtros de Búsqueda</h3>
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label for="filtro_empleado_permiso">Empleado</label>
+                            <select id="filtro_empleado_permiso" class="neumorphic-input">
+                                <option value="">Todos</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="filtro_tipo_permiso">Tipo de Permiso</label>
+                            <select id="filtro_tipo_permiso" class="neumorphic-input">
+                                <option value="">Todos</option>
+                                <option value="Médico">Médico</option>
+                                <option value="Personal">Personal</option>
+                                <option value="Fuerza Mayor">Fuerza Mayor</option>
+                                <option value="Vacaciones">Vacaciones</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="filtro_estado_permiso">Estado</label>
+                            <select id="filtro_estado_permiso" class="neumorphic-input">
+                                <option value="">Todos</option>
+                                <option value="pendiente">Pendiente</option>
+                                <option value="aprobado">Aprobado</option>
+                                <option value="rechazado">Rechazado</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>&nbsp;</label>
+                            <button class="neumorphic-button primary-button" onclick="aplicarFiltros()" style="width: 100%;">
+                                <i class="fas fa-search"></i> Buscar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="neumorphic-card elevated" style="margin-top: 20px;">
+                    <h3 class="chart-title"><i class="fas fa-table"></i> Registros de Permisos</h3>
+                    <div class="table-responsive" style="margin-top: 15px;">
+                        <table class="data-table" id="tablaReportePermisos">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Empleado</th>
+                                    <th>Tipo de Permiso</th>
+                                    <th>Fecha Inicio</th>
+                                    <th>Fecha Fin</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="6" style="text-align: center;">Cargando datos...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function cargarEmpleados() {
+            fetch('../controladores/empleados_crud.php?action=read', {
+                credentials: 'same-origin'
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        const select = document.getElementById('filtro_empleado_permiso');
+                        select.innerHTML = '<option value="">Todos</option>';
+                        data.empleados.forEach(emp => {
+                            const option = document.createElement('option');
+                            option.value = emp.id;
+                            option.textContent = `${emp.nombre} - ${emp.cargo}`;
+                            select.appendChild(option);
+                        });
+                    }
+                });
+        }
+
+        function cargarReporte() {
+            const fecha_inicio = document.getElementById('filtro_fecha_inicio')?.value || '';
+            const fecha_fin = document.getElementById('filtro_fecha_fin')?.value || '';
+            const estado = document.getElementById('filtro_estado_permiso').value;
+            const tipo = document.getElementById('filtro_tipo_permiso').value;
+            const id_empleado = document.getElementById('filtro_empleado_permiso').value;
+            
+            let url = '../controladores/reportes.php?tipo=permisos';
+            if (fecha_inicio) url += `&fecha_inicio=${fecha_inicio}`;
+            if (fecha_fin) url += `&fecha_fin=${fecha_fin}`;
+            if (estado) url += `&estado=${estado}`;
+            if (id_empleado) url += `&id_empleado=${id_empleado}`;
+            
+            fetch(url, {
+                credentials: 'same-origin'
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        const tbody = document.querySelector('#tablaReportePermisos tbody');
+                        if (data.data && data.data.length > 0) {
+                            // Filtrar por tipo si está seleccionado
+                            let permisos = data.data;
+                            if (tipo) {
+                                permisos = permisos.filter(p => p.tipo_permiso === tipo);
+                            }
+                            
+                            if (permisos.length > 0) {
+                                tbody.innerHTML = permisos.map((perm, index) => `
+                                    <tr class="${index % 2 === 0 ? '' : 'odd-row'}">
+                                        <td>${perm.id}</td>
+                                        <td>${perm.empleado_nombre || 'N/A'}</td>
+                                        <td>${perm.tipo_permiso}</td>
+                                        <td>${perm.fecha_inicio}</td>
+                                        <td>${perm.fecha_fin}</td>
+                                        <td><span class="status-badge ${perm.estado === 'aprobado' ? 'status-active' : perm.estado === 'pendiente' ? 'status-late' : ''}" style="${perm.estado === 'rechazado' ? 'color:#dc3545; background-color: rgba(220, 53, 69, 0.2);' : ''}">${perm.estado}</span></td>
+                                    </tr>
+                                `).join('');
+                            } else {
+                                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No se encontraron permisos</td></tr>';
+                            }
+                        } else {
+                            tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No se encontraron permisos</td></tr>';
+                        }
+                    } else {
+                        const tbody = document.querySelector('#tablaReportePermisos tbody');
+                        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: red;">Error: ${data.message || 'Error desconocido'}</td></tr>`;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    const tbody = document.querySelector('#tablaReportePermisos tbody');
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: red;">Error de conexión</td></tr>';
+                });
+        }
+
+        function aplicarFiltros() {
+            cargarReporte();
+        }
+
+        function exportarReporte() {
+            alert('Funcionalidad de exportación próximamente disponible');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarEmpleados();
+            cargarReporte();
+        });
+    </script>
+</body>
+</html>
